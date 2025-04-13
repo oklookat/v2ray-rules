@@ -13,13 +13,15 @@ Useful v2ray rules. The list of rules may be added to as needed. Or it may not.
         "tag": "geoip-reflected-networks",
         "type": "remote",
         "format": "binary",
-        "url": "https://github.com/oklookat/v2ray-rules/raw/refs/heads/main/sing-box/reflected-networks.srs"
+        "url": "https://github.com/oklookat/v2ray-rules/raw/refs/heads/main/sing-box/geoip/reflected-networks.srs"
       }
     ]
 ```
 
 Then you can use this rule. In general, read the documentation for the sing-box.
 
-## reflected-networks
+## geoip
+
+### reflected-networks
 
 PornHub hosts videos, etc, on Reflected Networks. So, if you want proxy PH, you need this.
