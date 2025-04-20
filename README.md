@@ -30,4 +30,4 @@ PornHub hosts videos, etc, on Reflected Networks. So, if you want proxy PH, you 
 
 ### xbox-wdl
 
-XBox services, except games downloading, etc.
+Xbox services, except games downloading, etc.
