@@ -25,3 +25,9 @@ Then you can use this rule. In general, read the documentation for the sing-box.
 ### reflected-networks
 
 PornHub hosts videos, etc, on Reflected Networks. So, if you want proxy PH, you need this.
+
+## geosite
+
+### xbox-wdl
+
+XBox services, except games downloading, etc.

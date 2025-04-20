@@ -9,3 +9,9 @@ https://sing-box.sagernet.org/configuration/rule-set/source-format
 ### reflected-networks
 
 https://ipinfo.io/AS29789
+
+## geosite
+
+### xbox-wdl
+
+source: ChatGPT
