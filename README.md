@@ -26,6 +26,10 @@ Then you can use this rule. In general, read the documentation for the sing-box.
 
 PornHub hosts videos, etc, on Reflected Networks. So, if you want proxy PH, you need this.
 
+## datacamp-limited (CDN77)
+
+AdGuard, Twitch, Udemy, and many others uses CDN77.
+
 ## geosite
 
 ### xbox-wdl

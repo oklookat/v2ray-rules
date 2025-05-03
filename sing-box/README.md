@@ -10,6 +10,10 @@ https://sing-box.sagernet.org/configuration/rule-set/source-format
 
 https://ipinfo.io/AS29789
 
+### datacamp-limited
+
+https://ipinfo.io/AS60068
+
 ## geosite
 
 ### xbox-wdl
