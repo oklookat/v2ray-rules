@@ -1,0 +1,14 @@
+# binaries
+*.exe
+*.bin
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.class
+*.jar
+*.pdb
+*.elf
+*.out
+*.app

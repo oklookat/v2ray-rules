@@ -30,6 +30,12 @@ PornHub hosts videos, etc, on Reflected Networks. So, if you want proxy PH, you 
 
 AdGuard, Twitch, Udemy, and many others uses CDN77.
 
+## digital-ocean
+
+Very many services uses Ditial Ocean. GitLab, Docker, XVideos, for example.
+
+Use carefully. Many IPs. 
+
 ## geosite
 
 ### xbox-wdl

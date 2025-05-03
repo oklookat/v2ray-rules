@@ -14,6 +14,12 @@ https://ipinfo.io/AS29789
 
 https://ipinfo.io/AS60068
 
+### digital-ocean
+
+https://ideas.digitalocean.com/documentation/p/list-of-digital-ocean-ips-cidrs
+
+https://digitalocean.com/geo/google.csv
+
 ## geosite
 
 ### xbox-wdl
