@@ -24,6 +24,10 @@
 
 <https://www.scaleway.com/en/docs/account/reference-content/scaleway-network-information/>
 
+### akamai
+
+https://bgpview.io via API, script bgpview.py.
+
 ## geosite
 
 ### xbox-wdl
