@@ -33,3 +33,7 @@ https://bgpview.io via API, script bgpview.py.
 ### xbox-wdl
 
 source: ChatGPT
+
+### no-russia
+
+https://github.com/dartraiden/no-russia-hosts
