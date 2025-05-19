@@ -49,3 +49,7 @@ Big CDN, many sites using it. Example: Spotify. Also can be blocked.
 ### xbox-wdl
 
 Xbox services, except games downloading, etc.
+
+### no-russia
+
+Resources, that blocking russian users, etc.
