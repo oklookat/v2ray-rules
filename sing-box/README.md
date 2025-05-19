@@ -10,7 +10,7 @@
 
 <https://ipinfo.io/AS29789>
 
-### datacamp-limited
+### datacamp-limited (CDN77)
 
 <https://ipinfo.io/AS60068>
 
@@ -26,11 +26,15 @@
 
 ### akamai
 
-https://bgpview.io via API, script bgpview.py.
+https://bgpview.io via bgpview.py.
 
-## vultr
+## vultr (AS-VULTR)
 
-https://bgpview.io via API, script bgpview.py, name: AS-VULTR
+https://bgpview.io via bgpview.py
+
+## pq.hosting (STARK-INDUSTRIES)
+
+https://bgpview.io via API, script bgpview.py
 
 ## geosite
 

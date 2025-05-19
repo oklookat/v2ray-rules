@@ -48,6 +48,10 @@ Big CDN, many sites using it. Example: Spotify. Also can be blocked.
 
 SSD VPS Servers, Cloud Servers and Cloud Hosting.
 
+## stark-industries
+
+a.k.a [pq.hosting](https://pq.hosting)
+
 ## geosite
 
 ### xbox-wdl
