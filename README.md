@@ -44,6 +44,10 @@ Use carefully. Many IPs.
 
 Big CDN, many sites using it. Example: Spotify. Also can be blocked.
 
+## vultr
+
+SSD VPS Servers, Cloud Servers and Cloud Hosting.
+
 ## geosite
 
 ### xbox-wdl
