@@ -187,7 +187,7 @@ def main():
         Company(name="digitalocean", filename="digital-ocean.json"),
         Company(name="12876", filename="scaleway.json"),
         Company(name="akamai", filename="akamai.json"),
-        Company(name="as-vultr", desc_filter="Vultr", filename="vultr.json"),
+        Company(name="as-vultr", filename="vultr.json"),
         Company(name="stark-industries", filename="stark-industries.json"),
         Company(
             name="oracle",
