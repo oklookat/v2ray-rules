@@ -12,7 +12,7 @@ from typing import List, Optional, Set
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    "User-Agent": "ruleset updater / (github.com/oklookat/v2ray-rules)",
 }
 
 
@@ -193,6 +193,13 @@ def main():
             name="oracle",
             desc_filter="oracle corporation",
             filename="oracle.json",
+        ),
+        Company(
+            name="hetzner",
+            filename="hetzner.json",
+        ),
+        Company(
+            name="cloudflare", desc_filter="cloudflare", filename="cloudflare.json"
         ),
     ]
 
