@@ -12,3 +12,5 @@
 *.elf
 *.out
 *.app
+# etc
+*.json

@@ -1,0 +1,68 @@
+name: sing-box-update-geoip
+
+on:
+  schedule:
+    - cron: "0 3 * * 0" # Every Sunday at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update-geoip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run sing-box geoip update script (with retry)
+        id: run-script
+        run: |
+          set -e
+          cd sing-box/utils/bgpview
+          python main.py || (echo "Script failed, will retry in 24h" && exit 42)
+
+      - name: Compare and update .srs files in geoip
+        if: success() || (failure() && steps.run-script.conclusion == 'success')
+        run: |
+          REPO_SRS_DIR="sing-box/geoip"
+          OUTPUT_SRS_DIR="sing-box/geoip"
+          mkdir -p "$REPO_SRS_DIR"
+          for f in "$OUTPUT_SRS_DIR"/*.srs; do
+            fname=$(basename "$f")
+            repo_file="$REPO_SRS_DIR/$fname"
+            if [ -f "$repo_file" ]; then
+              hash1=$(sha256sum "$f" | awk '{print $1}')
+              hash2=$(sha256sum "$repo_file" | awk '{print $1}')
+              if [ "$hash1" != "$hash2" ]; then
+                echo "Updating $repo_file (hash changed)"
+                cp "$f" "$repo_file"
+              else
+                echo "$repo_file is up to date."
+              fi
+            else
+              echo "Adding new $repo_file"
+              cp "$f" "$repo_file"
+            fi
+          done
+
+      - name: Commit and push geoip changes to release branch
+        if: success() || (failure() && steps.run-script.conclusion == 'success')
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git checkout -B release
+          git add sing-box/geoip/*.srs
+          if git diff --cached --quiet; then
+            echo "No .srs changes to commit."
+          else
+            git commit -m "Automated: Update geoip .srs files from workflow run"
+            git push --set-upstream origin release
+          fi
