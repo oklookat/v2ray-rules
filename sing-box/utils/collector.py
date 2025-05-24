@@ -300,7 +300,7 @@ def main():
         ),
         Hosts(
             name="no-russia-extra",
-            url="https://gist.githubusercontent.com/oklookat/b1f77cdc87b0337e3b74b94a03176dc0/raw/ed264898a77e479d8654cabc1c34ae705c41e6b3/no-russia-hosts-extra.txt",
+            url="https://gist.githubusercontent.com/oklookat/b1f77cdc87b0337e3b74b94a03176dc0/raw/f507cf3b8ae61c101f1e1b1387ab86a06cca0366/no-russia-hosts-extra.txt",
             output="no-russia-extra.json",
         ),
     ]
