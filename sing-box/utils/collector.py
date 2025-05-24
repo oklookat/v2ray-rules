@@ -11,10 +11,6 @@ from typing import List, Optional, Set
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
-HEADERS = {
-    "User-Agent": "ruleset updater / (github.com/oklookat/v2ray-rules)",
-}
-
 
 class Company:
     def __init__(
@@ -39,6 +35,90 @@ class Company:
         return self.name.lower().replace(" ", "_") + "_prefixes.json"
 
 
+HEADERS = {
+    "User-Agent": "ruleset updater / (github.com/oklookat/v2ray-rules)",
+}
+
+
+class Hosts:
+    def __init__(self, name: str, url: str, output: str):
+        self.name = name
+        self.url = url
+        self.output = output
+
+
+class HostsCollector:
+    def __init__(
+        self,
+        hosts: List[Hosts],
+        output_dir: str = "./rulesets",
+        delay: float = 8.0,
+    ):
+        self.hosts = hosts
+        self.output_dir = output_dir
+        self.delay = delay
+        # Ensure output_dir exists
+        os.makedirs(self.output_dir, exist_ok=True)
+
+    def fetch_hosts(self, url: str) -> str:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+
+    def extract_domains(self, text: str) -> List[str]:
+        domains = set()
+        for line in text.splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                domains.add(line)
+        return sorted(domains)
+
+    def _build_json(self, domains: List[str]) -> dict:
+        return {"version": 3, "rules": [{"domain_suffix": domains}]}
+
+    def run(self):
+        for host in self.hosts:
+            logging.info(f"\n--- Processing hosts: {host.name} ---")
+            try:
+                content = self.fetch_hosts(host.url)
+                domains = self.extract_domains(content)
+                data = self._build_json(domains)
+                output_path = os.path.normpath(
+                    os.path.join(self.output_dir, host.output)
+                )
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+                with open(output_path, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=4)
+                logging.info(f"Saved {len(domains)} domain(s) to '{output_path}'")
+            except Exception as e:
+                logging.error(f"Error processing {host.name}: {e}")
+                continue
+
+            # Compile ruleset
+            try:
+                subprocess.run(
+                    ["sing-box", "rule-set", "compile", output_path], check=True
+                )
+                logging.info(f"Compiled ruleset: {output_path}")
+            except FileNotFoundError:
+                logging.error(
+                    "sing-box not found. Please ensure it is installed and in PATH."
+                )
+            except subprocess.CalledProcessError as e:
+                logging.error(f"Failed to compile ruleset: {e}")
+
+            # Wait before the next request to avoid hitting rate limits
+            if self.hosts.index(host) < len(self.hosts) - 1:
+                try:
+                    logging.info(
+                        f"[RateLimit] Waiting {self.delay:.1f} seconds before next request..."
+                    )
+                    time.sleep(random.uniform(self.delay, self.delay))
+                except Exception as e:
+                    logging.error(f"Error during delay: {e}")
+                    continue
+
+
 class ASNPrefixCollector:
     def __init__(
         self,
@@ -53,9 +133,15 @@ class ASNPrefixCollector:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def run(self):
-        for company in self.companies:
+        for idx, company in enumerate(self.companies):
             logging.info(f"\n--- Processing '{company.name}' ---")
             self._process_company(company)
+            # Wait before the next request to avoid hitting rate limits, only if there is a next company
+            if idx < len(self.companies) - 1:
+                logging.info(
+                    f"[RateLimit] Waiting {self.delay:.1f} seconds before next company..."
+                )
+                time.sleep(random.uniform(self.delay, self.delay))
 
     def _process_company(self, company: Company):
         asns = self._search_asns(company.name)
@@ -181,7 +267,7 @@ class ASNPrefixCollector:
 
 
 def main():
-    companies = [
+    geoip_companies = [
         Company(name="reflected", filename="reflected-networks.json"),
         Company(name="cdn77", filename="cdn77.json"),
         Company(name="digitalocean", filename="digital-ocean.json"),
@@ -203,9 +289,21 @@ def main():
         ),
         Company(name="DEAC-AS", filename="deac.json"),
     ]
+    geosite_hosts = [
+        Hosts(
+            name="no-russia",
+            url="https://raw.githubusercontent.com/dartraiden/no-russia-hosts/refs/heads/master/hosts.txt",
+            output="no-russia.json",
+        )
+    ]
 
-    collector = ASNPrefixCollector(companies=companies, output_dir="../../geoip")
-    collector.run()
+    asn_prefix_collector = ASNPrefixCollector(
+        companies=geoip_companies, output_dir="../geoip"
+    )
+    hosts_collector = HostsCollector(hosts=geosite_hosts, output_dir="../geosite")
+
+    # asn_prefix_collector.run()
+    hosts_collector.run()
 
 
 if __name__ == "__main__":
