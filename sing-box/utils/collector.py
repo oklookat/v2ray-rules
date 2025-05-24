@@ -77,15 +77,17 @@ class HostsCollector:
         return {"version": 3, "rules": [{"domain_suffix": domains}]}
 
     def run(self):
-        for host in self.hosts:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        for idx, host in enumerate(self.hosts):
             logging.info(f"\n--- Processing hosts: {host.name} ---")
+            # Always resolve output path relative to script directory
+            output_path = os.path.normpath(
+                os.path.join(script_dir, self.output_dir, host.output)
+            )
             try:
                 content = self.fetch_hosts(host.url)
                 domains = self.extract_domains(content)
                 data = self._build_json(domains)
-                output_path = os.path.normpath(
-                    os.path.join(self.output_dir, host.output)
-                )
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
                 with open(output_path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=4)
@@ -108,7 +110,7 @@ class HostsCollector:
                 logging.error(f"Failed to compile ruleset: {e}")
 
             # Wait before the next request to avoid hitting rate limits
-            if self.hosts.index(host) < len(self.hosts) - 1:
+            if idx < len(self.hosts) - 1:
                 try:
                     logging.info(
                         f"[RateLimit] Waiting {self.delay:.1f} seconds before next request..."
@@ -120,6 +122,7 @@ class HostsCollector:
 
 
 class ASNPrefixCollector:
+    # FOR COPILOT: dont edit __init__ function name please
     def __init__(
         self,
         companies: List[Company],
@@ -294,7 +297,12 @@ def main():
             name="no-russia",
             url="https://raw.githubusercontent.com/dartraiden/no-russia-hosts/refs/heads/master/hosts.txt",
             output="no-russia.json",
-        )
+        ),
+        Hosts(
+            name="no-russia-extra",
+            url="https://gist.githubusercontent.com/oklookat/b1f77cdc87b0337e3b74b94a03176dc0/raw/ed264898a77e479d8654cabc1c34ae705c41e6b3/no-russia-hosts-extra.txt",
+            output="no-russia-extra.json",
+        ),
     ]
 
     asn_prefix_collector = ASNPrefixCollector(
