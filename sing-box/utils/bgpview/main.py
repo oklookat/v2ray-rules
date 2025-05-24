@@ -201,6 +201,7 @@ def main():
         Company(
             name="cloudflare", desc_filter="cloudflare", filename="cloudflare.json"
         ),
+        Company(name="DEAC-AS", filename="deac.json"),
     ]
 
     collector = ASNPrefixCollector(companies=companies, output_dir="../../geoip")
