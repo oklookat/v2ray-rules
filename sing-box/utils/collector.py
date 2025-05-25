@@ -295,13 +295,8 @@ def main():
     geosite_hosts = [
         Hosts(
             name="no-russia",
-            url="https://raw.githubusercontent.com/dartraiden/no-russia-hosts/refs/heads/master/hosts.txt",
+            url="https://github.com/oklookat/no-russia-hosts/raw/refs/heads/main/hosts.txt",
             output="no-russia.json",
-        ),
-        Hosts(
-            name="no-russia-extra",
-            url="https://gist.githubusercontent.com/oklookat/b1f77cdc87b0337e3b74b94a03176dc0/raw/f507cf3b8ae61c101f1e1b1387ab86a06cca0366/no-russia-hosts-extra.txt",
-            output="no-russia-extra.json",
         ),
     ]
 
