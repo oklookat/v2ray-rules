@@ -1,4 +1,5 @@
 # bgpview. credits: ChatGPT, GitHub Copilot
+from pathlib import Path
 import requests
 import json
 import time
@@ -264,6 +265,43 @@ class ASNPrefixCollector:
             logging.error(f"Failed to compile ruleset: {e}")
 
 
+class DomainListBuilder:
+    def __init__(self, url: str, output_path: str):
+        self.url = url
+        self.output_path = Path(output_path).resolve()
+        self.data = {"version": 3, "rules": []}
+
+    def fetch_domains(self):
+        response = requests.get(self.url)
+        response.raise_for_status()
+        domains = response.json()
+        if not isinstance(domains, list):
+            raise ValueError("Expected a JSON array of domains")
+        return domains
+
+    def build_data(self):
+        domains = self.fetch_domains()
+        self.data["rules"] = [{"domain_suffix": domains}]
+        return self.data
+
+    def save_to_file(self):
+        self.output_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.output_path.open("w", encoding="utf-8") as f:
+            json.dump(self.data, f, ensure_ascii=False, indent=2)
+
+    def compile_with_singbox(self):
+        cmd = ["sing-box", "rule-set", "compile", str(self.output_path)]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"sing-box compile failed:\n{result.stderr}")
+        print("Compile successful:\n", result.stdout)
+
+    def run(self):
+        self.build_data()
+        self.save_to_file()
+        self.compile_with_singbox()
+
+
 # ========================
 # COMPANY CONFIGURATION
 # ========================
@@ -305,8 +343,14 @@ def main():
     )
     hosts_collector = HostsCollector(hosts=geosite_hosts, output_dir="../geosite")
 
+    ct_collector = DomainListBuilder(
+        "https://reestr.rublacklist.net/api/v3/ct-domains",
+        "../geosite/censor-tracker.json",
+    )
+
     # asn_prefix_collector.run()
-    hosts_collector.run()
+    # hosts_collector.run()
+    ct_collector.run()
 
 
 if __name__ == "__main__":
