@@ -349,8 +349,8 @@ def main():
     )
 
     # asn_prefix_collector.run()
-    # hosts_collector.run()
-    ct_collector.run()
+    hosts_collector.run()
+    # ct_collector.run()
 
 
 if __name__ == "__main__":
