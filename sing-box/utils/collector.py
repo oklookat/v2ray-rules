@@ -10,6 +10,8 @@ import os
 import subprocess
 from typing import List, Optional, Set
 
+import tldextract
+
 # -----------------------------
 # Logging Configuration
 # -----------------------------
@@ -255,6 +257,8 @@ class ASNPrefixCollector:
 # -----------------------------
 # Domain List Builder
 # -----------------------------
+
+
 class DomainListBuilder:
     def __init__(self, url: str, output_path: str):
         self.url = url
@@ -269,8 +273,25 @@ class DomainListBuilder:
             raise ValueError("Expected a JSON array of domains")
         return domains
 
+    def normalize_domains(self, domains: List[str]) -> List[str]:
+        """
+        Removes subdomains, leaving only the root domain (eg hello.world.com → world.com).
+        """
+        root_domains = set()
+        for d in domains:
+            d = d.strip().lower()
+            if not d:
+                continue
+            ext = tldextract.extract(d)
+            if not ext.domain or not ext.suffix:
+                continue
+            root_domains.add(f"{ext.domain}.{ext.suffix}")
+        return sorted(root_domains)
+
     def build_data(self):
-        self.data["rules"] = [{"domain_suffix": self.fetch_domains()}]
+        domains = self.fetch_domains()
+        normalized = self.normalize_domains(domains)
+        self.data["rules"] = [{"domain_suffix": normalized}]
 
     def save_to_file(self):
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
