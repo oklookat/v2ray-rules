@@ -14,3 +14,7 @@
 *.app
 # etc
 *.json
+
+# workflow
+sing-box.tar.gz
+sing-box-*-linux-amd64/

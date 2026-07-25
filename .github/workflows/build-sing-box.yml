@@ -1,0 +1,88 @@
+name: Build sing-box rule-sets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "sing-box/package/category-ru.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download sing-box
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Getting latest sing-box release..."
+
+          URL=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest \
+            | jq -r '.assets[]
+                | select(.name | test("linux-amd64.tar.gz$"))
+                | .browser_download_url')
+
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "Failed to find sing-box release"
+            exit 1
+          fi
+
+          echo "Downloading:"
+          echo "$URL"
+
+          wget -q --show-progress -O sing-box.tar.gz "$URL"
+
+          tar -xf sing-box.tar.gz
+
+          DIR=$(find . -maxdepth 1 -type d -name "sing-box-*-linux-amd64" | head -n1)
+
+          if [ -z "$DIR" ]; then
+            echo "sing-box directory not found"
+            exit 1
+          fi
+
+          chmod +x "$DIR/sing-box"
+
+          sudo mv "$DIR/sing-box" /usr/local/bin/sing-box
+
+          sing-box version
+
+      - name: Compile rule-set category-ru
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sing-box rule-set compile \
+            --output sing-box/package/category-ru.srs \
+            sing-box/package/category-ru.json
+
+      - name: Commit generated rule-set
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- sing-box/package/category-ru.srs; then
+            echo "Nothing changed"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add sing-box/package/category-ru.srs
+
+          git commit \
+            -m "chore: update category-ru.srs"
+
+          git push
