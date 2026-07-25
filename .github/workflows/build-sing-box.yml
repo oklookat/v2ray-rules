@@ -26,26 +26,18 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "Getting latest sing-box release..."
+          VERSION=1.14.0-beta.2
 
-          URL=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest \
-            | jq -r '.assets[]
-                | select(.name | test("linux-amd64.tar.gz$"))
-                | .browser_download_url')
+          URL="https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box-${VERSION}-linux-amd64.tar.gz"
 
-          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
-            echo "Failed to find sing-box release"
-            exit 1
-          fi
-
-          echo "Downloading:"
+          echo "Downloading sing-box ${VERSION}"
           echo "$URL"
 
           wget -q --show-progress -O sing-box.tar.gz "$URL"
 
           tar -xf sing-box.tar.gz
 
-          DIR=$(find . -maxdepth 1 -type d -name "sing-box-*-linux-amd64" | head -n1)
+          DIR=$(find . -maxdepth 1 -type d -name "sing-box-${VERSION}-linux-amd64" | head -n1)
 
           if [ -z "$DIR" ]; then
             echo "sing-box directory not found"
